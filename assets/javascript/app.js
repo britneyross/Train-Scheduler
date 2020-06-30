@@ -6,91 +6,100 @@ var firebaseConfig = {
     storageBucket: "train-scheduler-afdb1.appspot.com",
     messagingSenderId: "117278996752",
     appId: "1:117278996752:web:e2fc6d7824e9df426e8d95"
-  };
-  
-  firebase.initializeApp(firebaseConfig);
-  
-  var trainData = firebase.database();
+};
 
-  $("#add-train").on("click", function(event) {
+firebase.initializeApp(firebaseConfig);
+
+var trainData = firebase.database();
+
+$("#add-train").on("click", function (event) {
     event.preventDefault();
-  
+
     var trainName = $("#nameInput").val().trim();
     var destination = $("#destInput").val().trim();
     var firstTrain = $("#timeInput").val().trim();
     var frequency = $("#freqInput").val().trim();
-  
+
     var newTrain = {
-      name: trainName,
-      destination: destination,
-      firstTrain: firstTrain,
-      frequency: frequency
+        name: trainName,
+        destination: destination,
+        firstTrain: firstTrain,
+        frequency: frequency
     };
-  
-    trainData.ref().push(newTrain);
+
+    var tId = trainData.ref().push(newTrain).key();
+    console.log(tId);
 
     alert("Train successfully added");
-  
+
     console.log(newTrain.name);
     console.log(newTrain.destination);
     console.log(newTrain.firstTrain);
     console.log(newTrain.frequency);
-      
+
     $("#nameInput").val("");
     $("#destInput").val("");
     $("#timeInput").val("");
     $("#freqInput").val("");
-  });
+});
 
-  trainData.ref().on("child_added", function(childSnapshot, prevChildKey) {
+trainData.ref().on("child_added", function (childSnapshot, prevChildKey) {
     console.log(childSnapshot.val());
-  
+
     var tName = childSnapshot.val().name;
     var tDestination = childSnapshot.val().destination;
     var tFrequency = childSnapshot.val().frequency;
     var tFirstTrain = childSnapshot.val().firstTrain;
-  
+    var tId = childSnapshot.key;
+
+    console.log(childSnapshot.key);
+
+
     var timeArr = tFirstTrain.split(":");
     var trainTime = moment()
-      .hours(timeArr[0])
-      .minutes(timeArr[1]);
+        .hours(timeArr[0])
+        .minutes(timeArr[1]);
     var maxMoment = moment.max(moment(), trainTime);
     var tMinutes;
     var tArrival;
 
     var removeButton = $("<button>").html("<span class='fa fa-remove'></span>");
     var editButton = $("<button>").html("<span class='fa fa-pencil-square-o'></span>");
-  
+
     if (maxMoment === trainTime) {
-      tArrival = trainTime.format("hh:mm A");
-      tMinutes = trainTime.diff(moment(), "minutes");
+        tArrival = trainTime.format("hh:mm A");
+        tMinutes = trainTime.diff(moment(), "minutes");
     } else {
-      var differenceTimes = moment().diff(trainTime, "minutes");
-      var tRemainder = differenceTimes % tFrequency;
-      tMinutes = tFrequency - tRemainder;
-      tArrival = moment()
-        .add(tMinutes, "m")
-        .format("hh:mm A");
+        var differenceTimes = moment().diff(trainTime, "minutes");
+        var tRemainder = differenceTimes % tFrequency;
+        tMinutes = tFrequency - tRemainder;
+        tArrival = moment()
+            .add(tMinutes, "m")
+            .format("hh:mm A");
     }
     console.log("tMinutes:", tMinutes);
     console.log("tArrival:", tArrival);
-  
-    $("#trainTable > tbody").append(
-      $("<tr>").append(
-        $("<td>").text(tName),
-        $("<td>").text(tDestination),
-        $("<td>").text(tFrequency),
-        $("<td>").text(tArrival),
-        $("<td>").text(tMinutes),
-        $("<td>").html(editButton),
-        $("<td>").html(removeButton)
-      )
-    );
-  });
 
-  $("body").on("click", ".fa-remove", function() {
-    $(this).closest("tr").remove(); 
-  });
+    $("#trainTable > tbody").append(
+        $("<tr id='" + tId + "'>").append(
+            $("<td>").text(tName),
+            $("<td>").text(tDestination),
+            $("<td>").text(tFrequency),
+            $("<td>").text(tArrival),
+            $("<td>").text(tMinutes),
+            $("<td>").html(editButton),
+            $("<td>").html(removeButton)
+        )
+    );
+});
+
+$("body").on("click", ".fa-remove", function () {
+    var element = $(this).closest("tr");
+    var id = element.attr("id");
+    trainData.ref().child(id).remove();
+    element.remove()
+});
+
 
 
 
