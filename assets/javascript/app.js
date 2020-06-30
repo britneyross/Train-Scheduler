@@ -57,6 +57,9 @@ var firebaseConfig = {
     var maxMoment = moment.max(moment(), trainTime);
     var tMinutes;
     var tArrival;
+
+    var removeButton = $("<button>").html("<span class='fa fa-remove'></span>");
+    var editButton = $("<button>").html("<span class='fa fa-pencil-square-o'></span>");
   
     if (maxMoment === trainTime) {
       tArrival = trainTime.format("hh:mm A");
@@ -78,8 +81,16 @@ var firebaseConfig = {
         $("<td>").text(tDestination),
         $("<td>").text(tFrequency),
         $("<td>").text(tArrival),
-        $("<td>").text(tMinutes)
+        $("<td>").text(tMinutes),
+        $("<td>").html(editButton),
+        $("<td>").html(removeButton)
       )
     );
   });
+
+  $("body").on("click", ".fa-remove", function() {
+    $(this).closest("tr").remove(); 
+  });
+
+
 
