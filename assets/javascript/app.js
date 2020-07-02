@@ -100,6 +100,6 @@ $("body").on("click", ".fa-remove", function () {
     element.remove()
 });
 
-
-
-
+$("#editButton").on("click", function() {
+    
+});
