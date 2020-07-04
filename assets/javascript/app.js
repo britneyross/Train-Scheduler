@@ -30,7 +30,7 @@ $("#add-train").on("click", function (event) {
     var tId = trainData.ref().push(newTrain).key();
     console.log(tId);
 
-    alert("Train successfully added");
+    alert("Train added!");
 
     console.log(newTrain.name);
     console.log(newTrain.destination);
@@ -82,7 +82,7 @@ trainData.ref().on("child_added", function (childSnapshot, prevChildKey) {
 
     $("#trainTable > tbody").append(
         $("<tr id='" + tId + "'>").append(
-            $("<td>").text(tName),
+            $("<td id='tName'>").text(tName),
             $("<td>").text(tDestination),
             $("<td>").text(tFrequency),
             $("<td>").text(tArrival),
@@ -100,6 +100,16 @@ $("body").on("click", ".fa-remove", function () {
     element.remove()
 });
 
-$("#editButton").on("click", function() {
-    
+
+$("body").on("click", ".fa-pencil-square-o", function () {
+
+let trainName = $( this).parent().parent().siblings("td:nth-child(1)").text();
+let trainDestination = $( this).parent().parent().siblings("td:nth-child(2)").text();
+// using jquery target the form's specific input and enter trainName, trainDestination
+
+$("#nameInput").val(trainName);
+console.log(trainName)
+
+$("#destInput").val(trainDestination);
+console.log(trainDestination)
 });
