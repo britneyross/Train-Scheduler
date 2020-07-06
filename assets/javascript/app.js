@@ -8,13 +8,9 @@ var firebaseConfig = {
     appId: "1:117278996752:web:e2fc6d7824e9df426e8d95"
 };
 
-
 firebase.initializeApp(firebaseConfig);
 
-
-
 var trainData = firebase.database();
-//var fStore = firebase.firestore();
 var editMode = false;
 var editID;
 
@@ -25,8 +21,8 @@ $("#add-train").on("click", function (event) {
     var destination = $("#destInput").val().trim();
     var firstTrain = $("#timeInput").val().trim();
     var frequency = $("#freqInput").val().trim();
-    
-    if(editMode){
+
+    if (editMode) {
 
         var element = $("#" + editID);
 
@@ -35,45 +31,40 @@ $("#add-train").on("click", function (event) {
         let trainDistanceElement = element.children("td:nth-child(3)");
         let trainFrequencyElement = element.children("td:nth-child(4)");
 
-            // Update Row
-            trainDestinationElement.text(destination);
-            trainNameElement.text(trainName);
-            trainDistanceElement.text(firstTrain);
-            trainFrequencyElement.text(frequency);
+        // Update Row
+        trainDestinationElement.text(destination);
+        trainNameElement.text(trainName);
+        trainDistanceElement.text(firstTrain);
+        trainFrequencyElement.text(frequency);
 
-            // DB update
-           trainData.ref().child(editID).set(
-               { name: trainName, 
-                 destination: destination,
-                 firstTrain: firstTrain,
-                 frequency: frequency
-                
-                }
+        // DB update
+        trainData.ref().child(editID).set(
+            {
+                name: trainName,
+                destination: destination,
+                firstTrain: firstTrain,
+                frequency: frequency
+            }
+        );
 
-            );
+        editMode = false;
+        $(this).text("Submit");
 
-
-            editMode = false;
-            $(this).text("Submit");
-
-            
-    }else{
+    } else {
         var newTrain = {
             name: trainName,
             destination: destination,
             firstTrain: firstTrain,
             frequency: frequency
         };
-    
+
         var tId = trainData.ref().push(newTrain).key;
         console.log(tId);
-    
+
         console.log(newTrain.name);
         console.log(newTrain.destination);
         console.log(newTrain.firstTrain);
         console.log(newTrain.frequency);
-    
-        
     }
 
     $("#nameInput").val("");
@@ -142,22 +133,22 @@ $("body").on("click", ".fa-remove", function () {
 
 $("body").on("click", ".fa-pencil-square-o", function () {
 
-let trainNameElement = $(this).parent().parent().siblings("td:nth-child(1)");
-let trainDestinationElement = $(this).parent().parent().siblings("td:nth-child(2)");
-let trainName = trainNameElement.text();
-let trainDestination = trainDestinationElement.text();
+    let trainNameElement = $(this).parent().parent().siblings("td:nth-child(1)");
+    let trainDestinationElement = $(this).parent().parent().siblings("td:nth-child(2)");
+    let trainName = trainNameElement.text();
+    let trainDestination = trainDestinationElement.text();
 
-// using jquery target the form's specific input and enter trainName, trainDestination
-$("#nameInput").val(trainName);
-console.log(trainName)
+    // using jquery target the form's specific input and enter trainName, trainDestination
+    $("#nameInput").val(trainName);
+    console.log(trainName)
 
-$("#destInput").val(trainDestination);
-console.log(trainDestination)
+    $("#destInput").val(trainDestination);
+    console.log(trainDestination)
 
-$("#add-train").text("Save");
-editMode = true;
-var element = $(this).closest("tr");
-editID= element.attr("id");
+    $("#add-train").text("Save");
+    editMode = true;
+    var element = $(this).closest("tr");
+    editID = element.attr("id");
 
 });
 
